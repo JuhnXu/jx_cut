@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单页连续阅读图片</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            width: 100%;
+            max-width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        .file-selector-container {
+            margin: 20px 0;
+        }
+        .file-selector {
+            padding: 12px 24px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .file-selector:hover {
+            background: #1976D2;
+        }
+        #fileInput {
+            display: none;
+        }
+        .info {
+            margin: 15px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        /* 图片容器 - 宽度自适应，支持连续滚动阅读 */
+        .images-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 10px;
+            width: 100%;
+            max-width: 100%;
+        }
+        .image-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+        }
+        /* 图片宽度完全自适应容器，高度自动 */
+        .image-item img {
+            width: 100%;          /* 宽度适配容器 */
+            max-width: 100%;      /* 最大宽度不超过容器 */
+            height: auto;         /* 高度自动，保持比例 */
+            max-height: 80vh;     /* 限制最大高度，避免一屏放不下 */
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+            color: #999;
+            font-size: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>单页连续阅读图片</h1>
+        <div class="file-selector-container">
+            <input type="file" id="fileInput" accept=".jpg,.png,.jpeg" multiple>
+            <button class="file-selector" onclick="document.getElementById('fileInput').click()">选择图片文件</button>
+        </div>
+        <div class="info" id="imageInfo">请选择jpg/png格式的图片文件</div>
+    </div>
+
+    <!-- 连续阅读的图片容器 -->
+    <div id="imagesContainer" class="images-container">
+        <div class="empty-state">
+            选择图片后将在这里按顺序连续展示
+        </div>
+    </div>
+
+    <script>
+        // 存储选中的图片文件
+        let imageFiles = [];
+        // 存储创建的URL对象，用于后续释放
+        let createdUrls = [];
+
+        // 监听文件选择事件
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            // 清空之前的状态
+            imageFiles = [];
+            clearImagesContainer();
+            revokeAllUrls();
+
+            // 获取选中的文件列表
+            const files = e.target.files;
+            
+            // 过滤出jpg和png格式的文件
+            for (let file of files) {
+                const fileType = file.type;
+                if (fileType === 'image/jpeg' || fileType === 'image/png' || fileType === 'image/jpg') {
+                    imageFiles.push(file);
+                }
+            }
+
+            // 更新信息提示
+            updateImageInfo();
+
+            // 如果有选中的图片，批量渲染到页面中
+            if (imageFiles.length > 0) {
+                renderAllImages();
+            }
+        });
+
+        // 清空图片容器
+        function clearImagesContainer() {
+            const container = document.getElementById('imagesContainer');
+            container.innerHTML = '';
+        }
+
+        // 释放所有创建的URL对象，避免内存泄漏
+        function revokeAllUrls() {
+            createdUrls.forEach(url => {
+                URL.revokeObjectURL(url);
+            });
+            createdUrls = [];
+        }
+
+        // 更新图片信息提示
+        function updateImageInfo() {
+            const infoElement = document.getElementById('imageInfo');
+            if (imageFiles.length === 0) {
+                infoElement.textContent = '未选择有效图片（仅支持jpg/png格式）';
+            } else {
+                infoElement.textContent = `已选择 ${imageFiles.length} 张图片，可向下滚动连续阅读`;
+            }
+        }
+
+        // 批量渲染所有图片到页面（按选择顺序，移除页码显示）
+        function renderAllImages() {
+            const container = document.getElementById('imagesContainer');
+            container.innerHTML = ''; // 清空容器
+
+            imageFiles.forEach((file) => {
+                // 创建图片URL
+                const imageUrl = URL.createObjectURL(file);
+                createdUrls.push(imageUrl);
+
+                // 创建图片项元素
+                const imageItem = document.createElement('div');
+                imageItem.className = 'image-item';
+
+                // 构建图片项的HTML内容（移除了页码和文件名显示）
+                imageItem.innerHTML = `
+                    <img src="${imageUrl}" alt="图片">
+                `;
+
+                // 添加到容器中
+                container.appendChild(imageItem);
+            });
+        }
+
+        // 页面卸载时释放资源
+        window.addEventListener('beforeunload', function() {
+            revokeAllUrls();
+        });
+    </script>
+</body>
+</html>
