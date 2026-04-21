@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>多图合成 A4 PDF</title>
+    <meta
+      name="description"
+      content="上传多张图片，按卡牌尺寸排版到 A4 纸张并导出 PDF，适合打印卡片。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./pdf.css" />
+  </head>
+  <body>
+    <main class="pdf-app">
+      <header class="topbar">
+        <a class="back-link" href="./index.html">返回切图工具</a>
+        <div>
+          <span class="eyebrow">A4 Print PDF</span>
+          <h1>多图合成 A4 PDF</h1>
+          <p>上传多张卡面图片，选择实体尺寸和份数，自动排版到 A4 纸张方便打印。</p>
+        </div>
+      </header>
+
+      <section class="stepper" aria-label="制作流程">
+        <div class="step is-active">
+          <span>1</span>
+          <strong>选择尺寸</strong>
+        </div>
+        <div class="step">
+          <span>2</span>
+          <strong>选择数量</strong>
+        </div>
+        <div class="step">
+          <span>3</span>
+          <strong>上传图片</strong>
+        </div>
+        <div class="step">
+          <span>4</span>
+          <strong>A4 预览</strong>
+        </div>
+        <div class="step">
+          <span>5</span>
+          <strong>保存 PDF</strong>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="settings-card">
+          <div class="field-block">
+            <label for="deckName">卡牌名称</label>
+            <input id="deckName" type="text" placeholder="请输入卡牌名称" value="cards" />
+          </div>
+
+          <div class="field-block">
+            <span class="field-label">常规尺寸</span>
+            <div class="radio-grid">
+              <label>
+                <input type="radio" name="sizePreset" value="63x88" checked />
+                <span>63 × 88mm</span>
+                <small>万智牌尺寸</small>
+              </label>
+              <label>
+                <input type="radio" name="sizePreset" value="62x87" />
+                <span>62 × 87mm</span>
+                <small>宽版三国杀</small>
+              </label>
+              <label>
+                <input type="radio" name="sizePreset" value="59x86" />
+                <span>59 × 86mm</span>
+                <small>游戏王尺寸</small>
+              </label>
+              <label>
+                <input type="radio" name="sizePreset" value="custom" />
+                <span>自定义</span>
+                <small>输入宽高</small>
+              </label>
+            </div>
+          </div>
+
+          <div class="custom-size" id="customSize" hidden>
+            <label>
+              宽
+              <input id="cardWidth" type="number" min="20" max="200" value="63" />
+              <span>mm</span>
+            </label>
+            <label>
+              高
+              <input id="cardHeight" type="number" min="20" max="200" value="88" />
+              <span>mm</span>
+            </label>
+          </div>
+
+          <div class="field-block two-col">
+            <label>
+              数量
+              <input id="copyCount" type="number" min="1" max="300" value="1" />
+            </label>
+            <label>
+              A4 边距
+              <input id="pageMargin" type="number" min="0" max="30" value="8" />
+              <span>mm</span>
+            </label>
+          </div>
+
+          <div class="field-block">
+            <span class="field-label">排版选项</span>
+            <label class="check-line">
+              <input id="showBleed" type="checkbox" checked />
+              <span>显示红色出血线</span>
+            </label>
+            <label class="check-line">
+              <input id="showSafe" type="checkbox" checked />
+              <span>显示橙色安全线</span>
+            </label>
+            <label class="check-line">
+              <input id="fitMode" type="checkbox" checked />
+              <span>图片铺满卡片，自动居中裁切</span>
+            </label>
+          </div>
+        </aside>
+
+        <section class="preview-card">
+          <div class="upload-panel" id="uploadPanel">
+            <input
+              id="imageInput"
+              type="file"
+              accept=".jpg,.jpeg,.png,.bmp,.webp,image/jpeg,image/png,image/bmp,image/webp"
+              multiple
+              hidden
+            />
+            <button class="upload-button" id="uploadButton" type="button">上传图片</button>
+            <p>支持 jpg、png、jpeg、bmp、webp 格式文件，可一次选择多张。</p>
+            <strong>将图片拖到下方 A4 预览区，或点击上传</strong>
+          </div>
+
+          <div class="thumb-strip" id="thumbStrip" aria-live="polite">
+            <span>暂无图片</span>
+          </div>
+
+          <div class="paper-shell" id="paperDrop">
+            <div class="paper-a4" id="paperPreview"></div>
+          </div>
+
+          <p class="print-note">
+            红色线是出血线，出血线外的部分可能会被裁掉；橙色虚线是安全线，建议重要内容不要超出安全线外。
+          </p>
+        </section>
+      </section>
+
+      <footer class="action-bar">
+        <div class="summary" id="layoutSummary">63 × 88mm，1 张，预计 1 页 A4</div>
+        <div class="actions">
+          <button class="ghost-btn" id="clearButton" type="button">清 空</button>
+          <button class="primary-btn" id="saveButton" type="button" disabled>保存 PDF</button>
+        </div>
+      </footer>
+    </main>
+
+    <script src="./vendor/jspdf.umd.min.js"></script>
+    <script src="./pdf.js"></script>
+  </body>
+</html>

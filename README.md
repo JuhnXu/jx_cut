@@ -8,6 +8,7 @@
 - 按横向和纵向份数切割
 - 实时预览分割线与编号
 - 一键下载所有切片 ZIP
+- 多图合成 A4 PDF，适合卡牌打印
 - 适配桌面和移动端
 
 ## 本地打开
@@ -41,8 +42,12 @@ python -m http.server 8080
 index.html
 styles.css
 script.js
+pdf.html
+pdf.css
+pdf.js
 README.md
 vendor/jszip.min.js
+vendor/jspdf.umd.min.js
 ```
 
 ## 说明
@@ -50,3 +55,5 @@ vendor/jszip.min.js
 - 切片编号顺序为：从左到右、从上到下
 - 导出的图片格式统一为 `png`
 - `vendor/jszip.min.js` 已包含在项目内，上传到 GitHub 后可直接使用
+- PDF 页面入口在首页的“多图合成 A4 PDF”
+- PDF 导出使用 A4 纸张，单位按毫米排版
