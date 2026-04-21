@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图片切割工具</title>
+    <meta
+      name="description"
+      content="上传图片后按横向和纵向份数切割，支持预览、清空和一键下载 ZIP。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="ambient ambient-left"></div>
+      <div class="ambient ambient-right"></div>
+
+      <main class="app-card">
+        <section class="preview-panel">
+          <div class="panel-head">
+            <span class="eyebrow">Image Cutter</span>
+            <h1>图片切割工具</h1>
+            <p>上传一张图片，按横向和纵向份数自动切片，支持实时预览与 ZIP 批量下载。</p>
+          </div>
+
+          <div class="preview-frame" id="previewFrame">
+            <div class="preview-empty" id="previewEmpty">
+              <div class="empty-badge">等待图片</div>
+              <h2>拖入一张图片开始切割</h2>
+              <p>左侧会显示切割编号和分割线，方便确认每一块的顺序。</p>
+            </div>
+
+            <img id="sourceImage" alt="切割预览图" hidden />
+
+            <div class="grid-overlay" id="gridOverlay" aria-hidden="true"></div>
+            <div class="tile-markers" id="tileMarkers" aria-hidden="true"></div>
+          </div>
+
+          <div class="meta-bar" id="metaBar">
+            <div class="meta-pill">
+              <span class="meta-label">原图尺寸</span>
+              <strong id="imageSize">未上传</strong>
+            </div>
+            <div class="meta-pill">
+              <span class="meta-label">切片数量</span>
+              <strong id="tileCount">0</strong>
+            </div>
+          </div>
+        </section>
+
+        <aside class="control-panel">
+          <label class="upload-box" id="uploadBox" for="fileInput">
+            <input
+              id="fileInput"
+              type="file"
+              accept=".jpg,.jpeg,.png,.bmp,.webp,image/jpeg,image/png,image/bmp,image/webp"
+              hidden
+            />
+
+            <div class="upload-icon" aria-hidden="true">
+              <svg viewBox="0 0 80 80" role="presentation">
+                <path
+                  d="M57.2 32.1a17.4 17.4 0 0 0-34.1-4.6A13.6 13.6 0 0 0 24.8 54h10.6V38.7h-8.1L40 24.9l12.7 13.8h-8.1V54h11.8A13.8 13.8 0 0 0 57.2 32Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </div>
+
+            <div class="upload-copy">
+              <strong>将图片拖到此处，或 <span>点击上传</span></strong>
+              <p>支持 jpg、png、jpeg、bmp、webp 格式</p>
+            </div>
+          </label>
+
+          <div class="field-group">
+            <label class="field">
+              <span>行数（横向）</span>
+              <input id="columnsInput" type="number" min="1" max="50" value="2" />
+            </label>
+
+            <label class="field">
+              <span>列数（纵向）</span>
+              <input id="rowsInput" type="number" min="1" max="50" value="2" />
+            </label>
+          </div>
+
+          <p class="helper-text">
+            横向表示宽度方向切成几份，纵向表示高度方向切成几份。编号顺序为从左到右、从上到下。
+          </p>
+
+          <div class="action-row">
+            <button class="ghost-btn" id="resetButton" type="button">清 空</button>
+            <button class="primary-btn" id="downloadButton" type="button" disabled>
+              下载 ZIP
+            </button>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script src="./vendor/jszip.min.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
