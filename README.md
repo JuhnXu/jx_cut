@@ -2,8 +2,6 @@
 
 一个可直接部署到 GitHub Pages 的静态图片切割网站。
 
-https://juhnxu.github.io/jx_cut/
-
 ## 功能
 
 - 拖拽或点击上传图片
