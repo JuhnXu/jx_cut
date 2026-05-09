@@ -1,0 +1,30 @@
+[
+  {
+    "path": "root",
+    "name": "",
+    "nickname": "",
+    "file": "root__script.lua",
+    "lines": 539
+  },
+  {
+    "path": "root/ObjectStates[8]/ContainedObjects[0]",
+    "name": "Custom_Token",
+    "nickname": "Phase",
+    "file": "root_ObjectStates_8_ContainedObjects_0__Phase.lua",
+    "lines": 232
+  },
+  {
+    "path": "root/ObjectStates[9]/ContainedObjects[6]",
+    "name": "Custom_Token",
+    "nickname": "Counter",
+    "file": "root_ObjectStates_9_ContainedObjects_6__Counter.lua",
+    "lines": 232
+  },
+  {
+    "path": "root/ObjectStates[10]/ContainedObjects[0]",
+    "name": "Custom_Token",
+    "nickname": "Day",
+    "file": "root_ObjectStates_10_ContainedObjects_0__Day.lua",
+    "lines": 232
+  }
+]
