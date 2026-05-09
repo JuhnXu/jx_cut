@@ -5,11 +5,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-ROOT = Path(r"D:\share\Mods")
-JSON_PATH = ROOT / "Workshop" / "3696466929.json"
+ROOT = Path.cwd()
 SCRIPT_DIR = ROOT / "tts_scripts"
 MANIFEST_PATH = SCRIPT_DIR / "manifest.json"
-BACKUP_PATH = JSON_PATH.with_suffix(".json.bak")
 
 
 @dataclass
@@ -21,13 +19,24 @@ class ScriptEntry:
     lines: int
 
 
-def load_json() -> dict:
-    return json.loads(JSON_PATH.read_text(encoding="utf-8"))
+def find_json_path() -> Path:
+    workshop_dir = ROOT / "Workshop"
+    if not workshop_dir.exists():
+        raise FileNotFoundError(f"Workshop directory not found: {workshop_dir}")
+    json_files = sorted(workshop_dir.glob("*.json"))
+    if not json_files:
+        raise FileNotFoundError(f"No JSON files found in: {workshop_dir}")
+    return json_files[0]
 
 
-def save_json(data: dict) -> None:
-    BACKUP_PATH.write_text(JSON_PATH.read_text(encoding="utf-8"), encoding="utf-8")
-    JSON_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+def load_json(json_path: Path) -> dict:
+    return json.loads(json_path.read_text(encoding="utf-8"))
+
+
+def save_json(json_path: Path, data: dict) -> None:
+    backup_path = json_path.with_suffix(".json.bak")
+    backup_path.write_text(json_path.read_text(encoding="utf-8"), encoding="utf-8")
+    json_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def iter_scripts(obj, path="root"):
@@ -61,7 +70,8 @@ def build_filename(entry: dict) -> str:
 
 
 def extract():
-    data = load_json()
+    json_path = find_json_path()
+    data = load_json(json_path)
     SCRIPT_DIR.mkdir(parents=True, exist_ok=True)
 
     manifest = []
@@ -79,11 +89,13 @@ def extract():
         )
 
     MANIFEST_PATH.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"source: {json_path}")
     print(f"extracted {len(manifest)} scripts to {SCRIPT_DIR}")
 
 
 def apply():
-    data = load_json()
+    json_path = find_json_path()
+    data = load_json(json_path)
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     path_map = {item["path"]: item for item in manifest}
     updated = 0
@@ -103,8 +115,9 @@ def apply():
                 walk(value, f"{path}[{idx}]")
 
     walk(data)
-    save_json(data)
-    print(f"updated {updated} scripts in {JSON_PATH}")
+    save_json(json_path, data)
+    print(f"source: {json_path}")
+    print(f"updated {updated} scripts in {json_path}")
 
 
 def main():
